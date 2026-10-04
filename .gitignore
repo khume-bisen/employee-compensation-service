@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+local.settings.json
+.env
+.vscode/
+
+# Azurite local storage
+AzuriteConfig
+__azurite_db_*.json
+__blobstorage__/
+
+# Local backups
+host.json.backup
