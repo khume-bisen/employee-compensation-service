@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Professional employee compensation management dashboard powered by Azure Functions and Azure SQL."
+    >
+
+    <title>
+        Employee Compensation | Fusion Practices
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                EC
+            </div>
+
+            <div class="brand-copy">
+
+                <strong>
+                    Compensation
+                </strong>
+
+                <span>
+                    Management Portal
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <button
+                class="nav-item active"
+                data-section="dashboard"
+                type="button"
+            >
+                <span class="nav-icon">
+                    ⌂
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-section="employees"
+                type="button"
+            >
+                <span class="nav-icon">
+                    ♙
+                </span>
+
+                <span>
+                    Employees
+                </span>
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-section="reports"
+                type="button"
+            >
+                <span class="nav-icon">
+                    ◫
+                </span>
+
+                <span>
+                    Reports
+                </span>
+            </button>
+
+        </nav>
+
+
+        <!-- API STATUS -->
+
+        <div class="sidebar-footer">
+
+            <span class="status-dot"></span>
+
+            <div>
+
+                <strong id="apiStatusText">
+                    Checking API...
+                </strong>
+
+                <small id="lastSync">
+                    Connecting...
+                </small>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================
+         MAIN CONTENT
+    ========================================== -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">
+                    FUSION PRACTICES
+                </p>
+
+                <h1 id="pageTitle">
+                    Dashboard
+                </h1>
+
+            </div>
+
+
+            <button
+                class="refresh-btn"
+                id="refreshBtn"
+                type="button"
+            >
+
+                <span>
+                    ↻
+                </span>
+
+                Refresh
+
+            </button>
+
+        </header>
+
+
+        <!-- =====================================
+             DASHBOARD
+        ====================================== -->
+
+        <section
+            id="dashboard"
+            class="page-section active-section"
+        >
+
+            <!-- HERO -->
+
+            <div class="hero reveal">
+
+                <div>
+
+                    <p class="eyebrow">
+                        LIVE AZURE DATA
+                    </p>
+
+                    <h2>
+                        Employee compensation at a glance
+                    </h2>
+
+                    <p>
+                        Monitor employees, salary, bonuses and
+                        total compensation from your Azure
+                        SQL-backed API.
+                    </p>
+
+                </div>
+
+
+                <div class="hero-badge">
+
+                    <span class="pulse"></span>
+
+                    Azure Functions · SQL
+
+                </div>
+
+            </div>
+
+
+            <!-- KPI CARDS -->
+
+            <div class="cards">
+
+                <!-- Total Employees -->
+
+                <article class="card stat-card reveal">
+
+                    <div class="card-top">
+
+                        <span>
+                            Total Employees
+                        </span>
+
+                        <span class="card-icon">
+                            ◉
+                        </span>
+
+                    </div>
+
+                    <strong id="totalEmployees">
+                        —
+                    </strong>
+
+                    <small>
+                        Active records
+                    </small>
+
+                </article>
+
+
+                <!-- Total Bonus -->
+
+                <article class="card stat-card reveal">
+
+                    <div class="card-top">
+
+                        <span>
+                            Total Bonus
+                        </span>
+
+                        <span class="card-icon">
+                            ₹
+                        </span>
+
+                    </div>
+
+                    <strong id="totalBonus">
+                        —
+                    </strong>
+
+                    <small>
+                        Across all employees
+                    </small>
+
+                </article>
+
+
+                <!-- Highest Salary -->
+
+                <article class="card stat-card reveal">
+
+                    <div class="card-top">
+
+                        <span>
+                            Highest Salary
+                        </span>
+
+                        <span class="card-icon">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <strong id="highestSalary">
+                        —
+                    </strong>
+
+                    <small id="highestSalaryName">
+                        Loading...
+                    </small>
+
+                </article>
+
+
+                <!-- Highest Compensation -->
+
+                <article class="card stat-card reveal">
+
+                    <div class="card-top">
+
+                        <span>
+                            Total Compensation
+                        </span>
+
+                        <span class="card-icon">
+                            ★
+                        </span>
+
+                    </div>
+
+                    <strong id="highestComp">
+                        —
+                    </strong>
+
+                    <small id="highestCompName">
+                        Loading...
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <!-- DASHBOARD LOWER GRID -->
+
+            <div class="grid-2">
+
+
+                <!-- COMPENSATION LEADERS -->
+
+                <article class="panel reveal">
+
+                    <div class="panel-head">
+
+                        <div>
+
+                            <h3>
+                                Compensation leaders
+                            </h3>
+
+                            <p>
+                                Top employees by total compensation
+                            </p>
+
+                        </div>
+
+                        <span class="panel-label">
+                            TOP 5
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="leaders"
+                        class="leader-list"
+                    >
+                    </div>
+
+                </article>
+
+
+                <!-- BONUS DISTRIBUTION -->
+
+                <article class="panel reveal">
+
+                    <div class="panel-head">
+
+                        <div>
+
+                            <h3>
+                                Bonus distribution
+                            </h3>
+
+                            <p>
+                                Employees grouped by bonus status
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="bonusSummary"
+                        class="summary-list"
+                    >
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             EMPLOYEES
+        ====================================== -->
+
+        <section
+            id="employees"
+            class="page-section"
+        >
+
+            <div class="section-head">
+
+                <div>
+
+                    <p class="eyebrow">
+                        EMPLOYEE DIRECTORY
+                    </p>
+
+                    <h2>
+                        Employees
+                    </h2>
+
+                    <p>
+                        Search, filter and manage employee records.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="primary"
+                    id="addEmployeeBtn"
+                    type="button"
+                >
+                    + Add Employee
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH / FILTER -->
+
+            <div class="toolbar">
+
+                <div class="search-wrap">
+
+                    <span>
+                        ⌕
+                    </span>
+
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search by name..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <select
+                    id="departmentFilter"
+                >
+
+                    <option value="">
+                        All departments
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- EMPLOYEE TABLE -->
+
+            <div class="panel table-panel">
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Employee
+                                </th>
+
+                                <th>
+                                    Department
+                                </th>
+
+                                <th>
+                                    Salary
+                                </th>
+
+                                <th>
+                                    Bonus
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Hire Date
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="employeeTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             REPORTS
+        ====================================== -->
+
+        <section
+            id="reports"
+            class="page-section"
+        >
+
+            <div class="section-head">
+
+                <div>
+
+                    <p class="eyebrow">
+                        ANALYTICS
+                    </p>
+
+                    <h2>
+                        Compensation Reports
+                    </h2>
+
+                    <p>
+                        Live report results from the
+                        Azure Functions API.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- REPORT CARDS -->
+
+            <div class="report-grid">
+
+
+                <!-- Total Bonus -->
+
+                <article class="panel report-card reveal">
+
+                    <span class="report-icon">
+                        ₹
+                    </span>
+
+                    <h3>
+                        Total Bonus
+                    </h3>
+
+                    <strong id="reportTotalBonus">
+                        —
+                    </strong>
+
+                    <p>
+                        Combined bonus amount
+                    </p>
+
+                </article>
+
+
+                <!-- Highest Salary -->
+
+                <article class="panel report-card reveal">
+
+                    <span class="report-icon">
+                        ↗
+                    </span>
+
+                    <h3>
+                        Highest Salary
+                    </h3>
+
+                    <strong id="reportHighestSalary">
+                        —
+                    </strong>
+
+                    <p id="reportHighestSalaryName">
+                        —
+                    </p>
+
+                </article>
+
+
+                <!-- Highest Compensation -->
+
+                <article class="panel report-card reveal">
+
+                    <span class="report-icon">
+                        ★
+                    </span>
+
+                    <h3>
+                        Highest Compensation
+                    </h3>
+
+                    <strong id="reportHighestComp">
+                        —
+                    </strong>
+
+                    <p id="reportHighestCompName">
+                        —
+                    </p>
+
+                </article>
+
+
+                <!-- No Bonus -->
+
+                <article class="panel report-card reveal">
+
+                    <span class="report-icon">
+                        ○
+                    </span>
+
+                    <h3>
+                        Employees Without Bonus
+                    </h3>
+
+                    <strong id="reportNoBonus">
+                        —
+                    </strong>
+
+                    <p>
+                        Bonus is null
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <!-- BONUS RANKING -->
+
+            <div class="panel reveal">
+
+                <div class="panel-head">
+
+                    <div>
+
+                        <h3>
+                            Bonus ranking
+                        </h3>
+
+                        <p>
+                            Highest bonus to lowest,
+                            with employees without bonus last.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Rank
+                                </th>
+
+                                <th>
+                                    Employee
+                                </th>
+
+                                <th>
+                                    Department
+                                </th>
+
+                                <th>
+                                    Salary
+                                </th>
+
+                                <th>
+                                    Bonus
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="rankingTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================
+     ADD / EDIT EMPLOYEE MODAL
+========================================== -->
+
+<div
+    class="modal hidden"
+    id="employeeModal"
+>
+
+    <div class="modal-card">
+
+        <div class="modal-head">
+
+            <div>
+
+                <p class="eyebrow">
+                    EMPLOYEE RECORD
+                </p>
+
+                <h2 id="modalTitle">
+                    Add Employee
+                </h2>
+
+            </div>
+
+
+            <button
+                class="icon-btn"
+                id="closeModal"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="employeeForm">
+
+            <input
+                type="hidden"
+                id="employeeId"
+            >
+
+
+            <div class="form-grid">
+
+
+                <!-- First Name -->
+
+                <label>
+
+                    First name
+
+                    <input
+                        id="firstName"
+                        type="text"
+                        required
+                        maxlength="50"
+                        autocomplete="given-name"
+                    >
+
+                </label>
+
+
+                <!-- Last Name -->
+
+                <label>
+
+                    Last name
+
+                    <input
+                        id="lastName"
+                        type="text"
+                        required
+                        maxlength="50"
+                        autocomplete="family-name"
+                    >
+
+                </label>
+
+
+                <!-- Department -->
+
+                <label>
+
+                    Department
+
+                    <select
+                        id="departmentId"
+                        required
+                    >
+                    </select>
+
+                </label>
+
+
+                <!-- Salary -->
+
+                <label>
+
+                    Salary
+
+                    <input
+                        id="salary"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </label>
+
+
+                <!-- Bonus -->
+
+                <label>
+
+                    Bonus
+
+                    <input
+                        id="bonus"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                    >
+
+                </label>
+
+
+                <!-- Hire Date -->
+
+                <label>
+
+                    Hire date
+
+                    <input
+                        id="hireDate"
+                        type="date"
+                        required
+                    >
+
+                </label>
+
+            </div>
+
+
+            <!-- MODAL ACTIONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary"
+                    id="cancelBtn"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary"
+                >
+                    Save Employee
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     TOAST
+========================================== -->
+
+<div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+>
+</div>
+
+
+<!-- JAVASCRIPT -->
+
+<script src="app.js"></script>
+
+</body>
+</html>
